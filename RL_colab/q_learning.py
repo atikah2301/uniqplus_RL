@@ -52,6 +52,12 @@ n_episodes = 200 # originally 5000
 
 # Action selection logic
 def action_selection(q_values, chosen, s, method='greedy'):
+    """
+    chosen = list where index i has the number of times lever i has been chosen for a trial in the current episode
+    q values = action values i.e. all future reward associated with action a at state s
+    values = state values i.e. all future reward associated with state s
+    s = current state as a list of length 2, giving the current coordinate position of the agent in the form [x, y]
+    """
     values = q_values[s[0], s[1]]
 
     if method == 'greedy':
