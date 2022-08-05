@@ -23,19 +23,24 @@ def reset(env): # dict -> np.array[(int, int)]
 
 # Define environment dynamics
 def step( env, action ): # dict, int -> int, np.array[(int, int)], bool
-  # With probability 'noise' we randomly replace the action
-  if np.random.uniform() < env['noise']:
-    action = np.random.randint(0, 4)
-  env['agent_position'] =  np.clip(env['agent_position'] + env['actions'][action], 0, env['size'] - 1)
-  reward = -1
-  done = False
-  # Reward computation
-  if np.array_equal(env['agent_position'], env['trap']): # if you hit the wall
-    reward = -10
-  if np.array_equal(env['agent_position'], env['goal']): # if you reach the goal
-    reward = 10
-    done = True
-  return reward, env['agent_position'], done
+
+    # With probability 'noise' we randomly replace the chosen action with a random action
+    if np.random.uniform() < env['noise']:
+        action = np.random.randint(0, 4)
+
+    # Carry out this action, assign it to the environment dictionary as current position + action = new position
+    # use np.clip to ensure the new coordinate is at most 9 and at least 0 (i.e. don't leave the grid space!)
+    env['agent_position'] =  np.clip(env['agent_position'] + env['actions'][action], 0, env['size'] - 1)
+    reward = -1 # since a time step has passed, you are penalised for wasting time
+    is_goal_found = False
+
+    # Reward computation
+    if np.array_equal(env['agent_position'], env['trap']): # if you hit the wall
+        reward = -10
+    if np.array_equal(env['agent_position'], env['goal']): # if you reach the goal
+        reward = 10
+        is_goal_found = True
+    return reward, env['agent_position'], is_goal_found
 
 
 # Create env
