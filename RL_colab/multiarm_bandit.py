@@ -4,22 +4,28 @@ import matplotlib.pyplot as plt
 
 def reset_bandit(n_levers = 10, sigma=1, mu=1):
   """ create a bandit with a random normal distribution assigned to each level"""
+  # np array of n_levers random floats chosen with the N(0,1) distribution
+  # scale these values up fit to our chosen N(mu, sigma) distribution
   mus = np.random.normal(size=[n_levers])*sigma + mu
   vars = np.random.normal(size=[n_levers])*sigma + mu
+  # dictionary to define the bandit as a sequence of levers with individual Normal distributions
+  # which themselves have normally distributed parameters...
   bandit = {'mus': mus, 'vars': vars, 'n_levers': n_levers}
   return bandit
 
 
-def draw_lever( bandit, n ):
-  """ generate a random value for lever n of the bandit """
+def draw_lever(bandit, n):
+  """ generate a random reward for lever n of the bandit """
+  # reward is an RV with pdf N(mu, var)
+  # use N(0,1) and scale up with the the chosen lever's assigned parameters
   reward = np.random.normal()* bandit['vars'][n] + bandit['mus'][n]
   return reward
 
 
-# Reset the bandit with appropriate parameters
+# Start by setting the bandit with appropriate parameters
 n_levers = 20
+n_tries = 10000 # rounds per episode
 bandit = reset_bandit(n_levers)
-n_tries = 10000
 
 
 # how to store a historical average of levers?
@@ -39,49 +45,47 @@ def action_selection(values, chosen, bandit, method='greedy'):
     if method == 'greedy':  # greedy algorithm
         return np.argmax(values)  # returns the index i.e. lever with the maximum reward in "values"
 
-    if method == 'ucb':  # upper confidence bounds algorithm
+    if method == 'ucb':  # upper confidence bounds algorithm, optimism in the face of uncertainty
         bonus = 4 * np.sqrt(np.log(i) / chosen)
-        values[chosen] = values[chosen] + bonus
-        return np.argmax(values)
+        # the bonus allows the current value of the chosen lever to bump up out most optimistic guess of its value
+        # this allows us to also prioritise levers which may at first seem to have very small reward
+        # to ensure our exploration is thorough
+        return np.argmax(values + bonus)
 
     if method == 'eps':  # epsilon greedy algorithm
         # epsilon is an arbitrarily chosen value between 0 and 1,
-        # representing the proprtion of times that we randomly choose a lever.
-        # the rest of the time, we choose greedily (i.e. the lever with max reward)
+        # representing the proportion of times that we randomly choose a lever,
+        # vs choosing one with the current max reward (greedy)
         epsilon = 0.1
-        # generate a bool with epilson probability of being True, and 1-epsilon prob of being False
+        # generate a bool with 1-epilson probability of being True, and epsilon prob of being False
         choose_greedily = (np.random.rand() >= epsilon)  # rand() returns a float [0,1)
         if choose_greedily:
             return np.argmax(values)
         else:  # else choose randomly
             return np.random.randint(n_levers)
 
-    if method == 'opt':  # optimism in the face of uncertainty algorithm
-        if np.random.uniform() < 0.05:
-            return np.random.randint(bandit['n_levers'])
-        else:
-            return np.argmax(values)
-
 
 # Learning code
-alpha = 0.03  # learning rate, if 1 you would just choose the next best value
+alpha = 0.03  # learning rate hyperparameter, 1=very fast but unstable learning, 0.001=very slow but very stable
 values = np.zeros(n_levers)  # [0,0,0,..,0] the stochastically generated reward value for the current iteration, i
 chosen = np.ones(n_levers)  # [1,1,1,..,1] represents the number of times a lever (n = index) is chosen
 # set to all 1s since for ubc, we divide by chosen[], so cannot be 0
-rewards = np.zeros(n_tries)  # [0,0,0,..,0] the estimated reward we are regressively predicted
+rewards = np.zeros(n_tries)  # [0,0,0,..,0] the estimated reward we are regressively predicting
 all_values = np.zeros([n_tries, n_levers])
 
 for i in range(1, n_tries):  # 1 to 9999
 
-    action = action_selection(values, chosen, bandit, 'eps')  # choose a lever based on a given method
+    action = action_selection(values, chosen, bandit, 'ucb')  # choose a lever based on a given method
+    # and current predicted rewards
     chosen[action] += 1  # increment the counter for the lever that was chosen
-    reward = draw_lever(bandit, action)  # each time the lever is pulled, the reward is updated based on current value
-    rewards[i] = reward  # set a new expected max reward, which was calculated from the lever that we chose
+    reward = draw_lever(bandit, action)  # each time a lever is pulled, its reward is stochastically re-chosen
+    rewards[i] = reward  # add the reward we got for this iteration to the list of all rewards for this episode
 
     # YOUR CODE
-    error = reward - values[action]
-    values[action] += alpha * error
-    all_values[i] = values
+    error = reward - values[action] # actual - predicted rewards
+    values[action] += alpha * error # shift the predicted reward closer to the new current reward slightly.
+    # the smaller the alpha, the less we shift
+    all_values[i] = values # append the new prediction to our list of all predictions for this episode
 
 
 plt.figure(figsize=(10,4))
