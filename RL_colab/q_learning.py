@@ -92,11 +92,11 @@ for e in range(n_episodes):
         rewards[e] += r  # add to the total reward for this episode
 
         # YOUR CODE HERE
-        td_error = 0 # fix
-        values[s[0], s[1]] += alpha * td_error
-        td_error = 0  # fix
-        q_values[s[0], s[1], action] += alpha * td_error
-        s = s_prime
+        td_error = r + gamma * values[s_prime[0], s_prime[1]] * (not done) - values[s[0], s[1]]
+        values[s[0], s[1]] += alpha * td_error # update state values
+        td_error = r + gamma * q_values[s_prime[0], s_prime[1], action] * (not done) - q_values[s[0], s[1], action]
+        q_values[s[0], s[1], action] += alpha * td_error # update action values
+        s = s_prime # take the next state
         if done:
             break
 
