@@ -73,9 +73,9 @@ def action_selection(q_values, chosen, s, method='greedy'):
 
 
 # Value logic
-values = np.zeros([env['size'], env['size']])
-q_values = np.zeros([env['size'], env['size'], 4])
-chosen = np.ones([env['size'], env['size'], 4])
+values = np.zeros([env['size'], env['size']]) # 10x10 states values
+q_values = np.zeros([env['size'], env['size'], 4]) # 10x10x4 q-table for all 100 states and 4 actions, initialised at 0
+chosen = np.ones([env['size'], env['size'], 4]) # 10x10x4 counting the number of times action a is taken in state s
 
 # Learning Logic
 alpha = 0.5 # learning rate i.e. how much we rely on past actions to influence future actions
