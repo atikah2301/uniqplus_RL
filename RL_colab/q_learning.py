@@ -39,12 +39,10 @@ def step( env, action ): # dict, int -> int, np.array[(int, int)], bool
 
 
 # Create env
-env = create_env(
-    noise=0.0)  # noise = the proportion of times that the environment will cause the agent to behave randomly
-max_length = 100  # path should not exceed 100,
-# because naive navigation would give a path length of 100 in the worst case
-gamma = 0.99  # in bellman equation, discount factor or discount rate
-n_episodes = 5000
+env = create_env(noise=0.0)  # noise = proportion of times the environment causes agent to behave randomly
+max_length = 100  # path length capped since naive navigation gives a path length of 100 in the worst case
+gamma = 0.99  # discount rate in bellman equation - how much we consider future rewards in calculating return
+n_episodes = 200 # originally 5000
 
 
 # Action selection logic
