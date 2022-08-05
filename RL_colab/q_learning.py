@@ -81,14 +81,15 @@ chosen = np.ones([env['size'], env['size'], 4]) # 10x10x4 counting the number of
 alpha = 0.5 # learning rate i.e. how much we rely on past actions to influence future actions
 
 # run episode
-rewards = np.zeros(n_episodes)
+rewards = np.zeros(n_episodes) # track the total reward for each episode
 for e in range(n_episodes):
-    s = reset(env)
-    for t in range(max_length):
-        action = action_selection(q_values, chosen, s, 'eps')
-        chosen[s[0], s[1], action] += 1
-        r, s_prime, done = step(env, action)
-        rewards[e] += r  # log rewards
+    s = reset(env) # reset the agent's position to [0, 0] for new episode
+    for t in range(max_length): # 100 time steps
+        action = action_selection(q_values, chosen, s, 'greedy') # choose an action {up, down, left, right}
+        # given as a direction vector like [0, 1] for up
+        chosen[s[0], s[1], action] += 1 # increment the chosen state-action's counter
+        r, s_prime, done = step(env, action) # calculate reward, determine next state, check if goal is met
+        rewards[e] += r  # add to the total reward for this episode
 
         # YOUR CODE HERE
         td_error = 0 # fix
