@@ -56,11 +56,11 @@ def action_selection(q_values, chosen, s, method='greedy'):
 
     if method == 'ucb':
         # YOUR CODE HERE
-        return 0  # Fixme
+        return 0  # fix
 
     if method == 'eps':
         # YOUR CODE HERE
-        return 0  # Fixme
+        return 0  # fix
 
 
 # Value logic
@@ -69,7 +69,7 @@ q_values = np.zeros([env['size'], env['size'], 4])
 chosen = np.ones([env['size'], env['size'], 4])
 
 # Learning Logic
-alpha = 0.5
+alpha = 0.5 # learning rate i.e. how much we rely on past actions to influence future actions
 
 # run episode
 rewards = np.zeros(n_episodes)
@@ -82,9 +82,9 @@ for e in range(n_episodes):
         rewards[e] += r  # log rewards
 
         # YOUR CODE HERE
-        td_error = 0  # Fixme
+        td_error = 0 # fix
         values[s[0], s[1]] += alpha * td_error
-        td_error = 0  # Fixme
+        td_error = 0  # fix
         q_values[s[0], s[1], action] += alpha * td_error
         s = s_prime
         if done:
