@@ -88,10 +88,11 @@ for i in range(1, n_tries):  # 1 to 9999
     all_values[i] = values # append the new prediction to our list of all predictions for this episode
 
 
-plt.figure(figsize=(10,4))
-plt.subplot(1,2,1)
-
 #Plotting Logic
+plt.figure(figsize=(10,4))
+
+plt.subplot(1,2,1)
+plt.title("Episode Rewards")
 window = n_tries //30
 plt.plot(rewards, alpha = 0.2)
 plt.plot(rewards * 0 + np.max(bandit['mus']), '--')
@@ -99,6 +100,7 @@ smoothed = np.convolve(rewards, np.ones(window)/window, mode='valid')
 plt.plot(smoothed,'r')
 
 plt.subplot(1,2,2)
+plt.title("Lever Values")
 plt.plot(all_values)
 plt.show()
 
