@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn
 
 
 def create_env(size = 10, noise = 0): # int, int -> dict
@@ -102,13 +103,12 @@ for e in range(n_episodes):
 
 
 # Plotting logic
-plt.figure(figsize=(10,4))
-plt.subplot(1,2,1)
-plt.imshow(values)
-plt.colorbar()
-
-plt.subplot(1,2,2)
-plt.plot(rewards, alpha = 0.2)
+plt.figure(figsize=(10,4)) # create figure, set width x height in inches
+plt.subplot(1,2,1) # subplot(rows, cols, current index to plot on numbered starting with 1)
+# i.e. create a plotting space with 1 row and 2 columns, and set the first plot at index 1
+seaborn.heatmap(values, cmap="flare", linewidths=.5) # show the 2D array values as an image (heatmap by default)
+# plt.imshow(values)
+# plt.colorbar() # show the colour scale bar for image
 window = n_episodes // 30
 smoothed = np.convolve(rewards, np.ones(window)/window, mode='valid')
 plt.plot(smoothed)
