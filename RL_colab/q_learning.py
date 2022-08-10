@@ -109,8 +109,14 @@ plt.subplot(1,2,1) # subplot(rows, cols, current index to plot on numbered start
 seaborn.heatmap(values, cmap="flare", linewidths=.5) # show the 2D array values as an image (heatmap by default)
 # plt.imshow(values)
 # plt.colorbar() # show the colour scale bar for image
+plt.title("Gridworld State Values")
+
+plt.subplot(1,2,2) # set the second plot at index 2 in the plotting space
+plt.plot(rewards, alpha = 0.2) # plot the rewards for each episode (semi-transparent blue line)
 window = n_episodes // 30
 smoothed = np.convolve(rewards, np.ones(window)/window, mode='valid')
-plt.plot(smoothed)
+plt.plot(smoothed) # plot a red line showing a smoother plot for the rewards
+# this shows the trend more clearly
+plt.title("Episode Rewards")
 plt.show()
 
