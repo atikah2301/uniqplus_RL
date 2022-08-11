@@ -94,16 +94,19 @@ for i in range(1, n_tries):  # 1 to 9999
 plt.figure(figsize=(10,4))
 
 plt.subplot(1,2,1)
-plt.title("Episode Rewards")
+plt.title("Rewards")
 window = n_tries //30
-plt.plot(rewards, alpha = 0.2)
-plt.plot(rewards * 0 + np.max(bandit['mus']), '--')
+plt.plot(rewards, alpha = 0.2, label='Original Estimate')
+plt.plot(rewards * 0 + np.max(bandit['mus']), '--', label="Max Mean Lever Reward")
 smoothed = np.convolve(rewards, np.ones(window)/window, mode='valid')
-plt.plot(smoothed,'r')
+plt.plot(smoothed,'r', alpha=0.7, label="Smoothed Estimate")
+plt.xlabel("Tries")
+plt.legend()
 
 plt.subplot(1,2,2)
 plt.title("Lever Values")
 plt.plot(all_values)
+plt.xlabel("Tries")
 plt.show()
 
 
