@@ -61,9 +61,11 @@ def action_selection(values, chosen, bandit, method='greedy'):
         choose_greedily = (np.random.rand() >= epsilon)  # rand() returns a float [0,1)
         if choose_greedily:
             return np.argmax(values)
-        else:  # else choose randomly
+        else:
+            # Choose a lever that IS NOT the lever with highest expected reward
+            # return np.random.randint(n_levers[:np.argmax(values)] + n_levers[np.argmax(values)+1:])
+            # Choose any lever
             return np.random.randint(n_levers)
-
 
 # Learning code
 alpha = 0.03  # learning rate hyperparameter, 1=very fast but unstable learning, 0.001=very slow but very stable
