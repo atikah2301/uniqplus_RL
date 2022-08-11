@@ -7,7 +7,10 @@ def create_env(size = 10, noise = 0): # int, int -> dict
   """ Create basic gridworld environment """
   agent_position = np.array([0,0]) # start at origin, (0,0)
   goal = np.array([size-1, size-1]) # set goal at (9,9), i.e. the opposite corner
-  trap = np.array([6,6]) # set a "wall"
+  # set walls
+  trap = []
+  # trap = [np.array([6,6]), np.array([6,7]), np.array([6,8]), np.array([6,9]),
+  #         np.array([7,0]), np.array([7,1]), np.array([7,2]), np.array([7,3]), np.array([7,4])]
   # Action encoding: up / down / left / right as lists
   # To choose an action, choose its index 0,1,2,3
   actions =[[1,0], [-1,0], [0,-1], [0,1]]
@@ -36,8 +39,11 @@ def step( env, action ): # dict, int -> int, np.array[(int, int)], bool
     is_goal_found = False
 
     # Reward computation
-    if np.array_equal(env['agent_position'], env['trap']): # if you hit the wall
-        reward = -10
+    for trap in env['trap']:
+        print(f"current trap {trap}")
+        if np.array_equal(env['agent_position'], trap): # if you hit the wall
+            reward = -10
+            print(f"{trap} activated")
     if np.array_equal(env['agent_position'], env['goal']): # if you reach the goal
         reward = 10
         is_goal_found = True
